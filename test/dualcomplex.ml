@@ -195,6 +195,14 @@ let tests = "Dualcomplex tests" >::: [
     let x' = Complex.norm (Dualcomplex.complex n) in
     assert_bool "norm produced an incorrect value." ( x = x' ));
 
+  "normalize" >:: (fun _ ->
+    let a, b, c, d = (1.0, 2.0, 3.0, 4.0) in
+    let n = Dualcomplex.of_float_tuple (a, b, c, d) in
+    let x = Complex.norm (Dualcomplex.complex n) in
+    let m = Dualcomplex.of_float_tuple (a /. x, b /. x, c /. x, d /. x) in
+    let m' = Dualcomplex.normalize n in
+    assert_bool "normalize produced an incorrect value." ( eq m m' ));
+
   "neg 1" >:: (fun _ ->
     let a, b, c, d = (1.0, 2.0, 3.0, 4.0) in
     let n = Dualcomplex.of_float_tuple (a, b, c, d) in
@@ -250,6 +258,111 @@ let tests = "Dualcomplex tests" >::: [
     assert_bool
       "inv produced an incorrect value."
       ( is_close m Dualcomplex.one ));
+
+  "exp 1" >:: (fun _ ->
+    (* Test exp of 0. *)
+    let n = Dualcomplex.zero in
+    let m = Dualcomplex.one in
+    let m' = Dualcomplex.exp n in
+    assert_bool "exp produced an incorrect value." ( eq m m' ));
+
+  "exp 2" >:: (fun _ ->
+    (* Test exp of 1. *)
+    let n = Dualcomplex.one in
+    let m = Dualcomplex.of_complex Complex.( exp one ) in
+    let m' = Dualcomplex.exp n in
+    assert_bool "exp produced an incorrect value." ( eq m m' ));
+
+  "exp 3" >:: (fun _ ->
+    (* Test exp of a zero-scalar-part dual complex. *)
+    let a, b, c = (1.0, 2.0, 3.0) in
+    let p, q = Complex.( { re = 0.0; im = a }, { re = b; im = c }) in
+    let n = Dualcomplex.of_complex_tuple (p, q) in
+    let
+      m = Dualcomplex.of_complex_tuple Complex.(
+        polar 1.0 a,
+        mul { re = (sin a) /. a; im = 0.0 } q)
+    in
+    let m' = Dualcomplex.exp n in
+    assert_bool "exp produced an incorrect value." ( eq m m' ));
+
+  "exp 4" >:: (fun _ ->
+    (* Test implementation againts the formula in the article. *)
+    let a, b, c, d = (1.0, 2.0, 3.0, 4.0) in
+    let p, q = Complex.( { re = a; im = b }, { re = c; im = d }) in
+    let n = Dualcomplex.of_complex_tuple (p, q) in
+    let
+      m = Dualcomplex.of_complex_tuple Complex.(
+        exp p,
+        mul
+          (div
+            (sub (exp p) (exp (conj p)))
+            (sub p (conj p)))
+        q)
+    in
+    let m' = Dualcomplex.exp n in
+    assert_bool "exp produced an incorrect value." ( eq m m' ));
+
+  "exp 5" >:: (fun _ ->
+    (* Test that log is the inverse of exp. *)
+    let a, b, c, d = (1.0, 2.0, 3.0, 4.0) in
+    let n = Dualcomplex.of_float_tuple (a, b, c, d) in
+    let n' = Dualcomplex.( log (exp n) ) in
+    assert_bool "exp produced an incorrect value." ( eq n n' ));
+
+  "log 1" >:: (fun _ ->
+    (* Test log of 1. *)
+    let n = Dualcomplex.one in
+    let m = Dualcomplex.zero in
+    let m' = Dualcomplex.log n in
+    assert_bool "log produced an incorrect value." ( eq m m' ));
+
+  "log 2" >:: (fun _ ->
+    (* Test log of a unit-norm dual complex. *)
+    let a = 1.0 in
+    let b, c = (2.0, 3.0) in
+    let p = Complex.polar 1.0 a in
+    let q = Complex.( { re = b; im = c } ) in
+    let n = Dualcomplex.of_complex_tuple (p, q) in
+    let
+      m = Dualcomplex.of_complex_tuple Complex.(
+        { re = 0.0; im = a },
+        mul { re = a /. (sin a); im = 0.0 } q)
+    in
+    let m' = Dualcomplex.log n in
+    assert_bool "log produced an incorrect value." ( eq m m' ));
+
+  "log 3" >:: (fun _ ->
+    (* Test the implementation against the inverse of the formula in
+       the article. *)
+    let a, b, c, d = (1.0, 2.0, 3.0, 4.0) in
+    let p, q = Complex.( { re = a; im = b }, { re = c; im = d }) in
+    let n = Dualcomplex.of_complex_tuple (p, q) in
+    let
+      m = Dualcomplex.of_complex_tuple Complex.(
+        log p,
+        mul
+          (div
+            (sub (log p) (log (conj p)))
+            (sub p (conj p)))
+          q)
+    in
+    let m' = Dualcomplex.log n in
+    assert_bool "log produced an incorrect value." ( eq m m' ));
+
+  "log 4" >:: (fun _ ->
+    (* Test that exp is the inverse of log. *)
+    let a, b, c, d = (1.0, 2.0, 3.0, 4.0) in
+    let n = Dualcomplex.of_float_tuple (a, b, c, d) in
+    let n' = Dualcomplex.( exp (log n) ) in
+    assert_bool "log produced an incorrect value." ( is_close n n' ));
+
+  "apply" >:: (fun _ ->
+    let m = Dualcomplex.of_float_tuple (1.0, 2.0, 3.0, 4.0) in
+    let n = Dualcomplex.of_float_tuple (5.0, 6.0, 7.0, 8.0) in
+    let p = Dualcomplex.( mul m (mul n (conj m)) ) in
+    let p' = Dualcomplex.apply m n in
+    assert_bool "apply produced an incorrect value." ( eq p p' ));
 
   "add" >:: (fun _ ->
     let a1, b1, c1, d1 = (1.0, 2.0, 3.0, 4.0) in

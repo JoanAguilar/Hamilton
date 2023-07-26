@@ -57,6 +57,12 @@ let norm2 (p, _) = Complex.norm2 p
 
 let norm (p, _) = Complex.norm p
 
+let normalize (p, q) =
+  let n = norm (p, q) in
+  Complex.(
+    { re = p.re /. n; im = p.im /. n },
+    { re = q.re /. n; im = q.im /. n })
+
 let neg (p, q) = Complex.(neg p, neg q)
 
 let conj (p, q) = Complex.(conj p, q)
@@ -65,6 +71,25 @@ let inv (p, q) =
   let norm2_p = Complex.( mul p (conj p) ) in
   Complex.( inv p, neg (div q norm2_p) )
 
+let exp (p, q) =
+  let ea = exp Complex.( p.re ) in
+  (* Take care of edge case where [p.im = 0.0]. *)
+  if Complex.( p.im = 0.0 ) then
+    of_float_tuple Complex.(ea, 0.0, ea *. q.re, ea *. q.im)
+  else
+    let sb = sin Complex.( p.im ) in
+    of_complex_tuple Complex.(
+      exp p,
+      mul { re = ea *. sb /. p.im; im = 0.0 } q )
+
+let log (p, q) =
+  (* Take care of the edge case where [n] is [one]. *)
+  if Complex.( p.re = 1.0 && p.im = 0.0 && q.re = 0.0 && q.im = 0.0 ) then
+    zero
+  else
+    let lp = Complex.log p in
+    of_complex_tuple Complex.(lp, mul { re = lp.im /. p.im; im = 0.0 } q )
+
 let add (p1, q1) (p2, q2) = Complex.( add p1 p2, add q1 q2 )
 
 let sub (p1, q1) (p2, q2) = Complex.( sub p1 p2, sub q1 q2 )
@@ -72,5 +97,7 @@ let sub (p1, q1) (p2, q2) = Complex.( sub p1 p2, sub q1 q2 )
 let mul (p1, q1) (p2, q2) = Complex.(
   mul p1 p2,
   add (mul q1 (conj p2) ) (mul p1 q2) )
+
+let apply m n = mul m (mul n (conj m))
 
 let div x y = mul x (inv y)
