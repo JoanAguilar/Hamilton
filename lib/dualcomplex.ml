@@ -78,17 +78,15 @@ let exp (p, q) =
     of_float_tuple Complex.(ea, 0.0, ea *. q.re, ea *. q.im)
   else
     let sb = sin Complex.( p.im ) in
-    of_complex_tuple Complex.(
-      exp p,
-      mul { re = ea *. sb /. p.im; im = 0.0 } q )
+    Complex.( exp p, mul { re = ea *. sb /. p.im; im = 0.0 } q )
 
 let log (p, q) =
-  (* Take care of the edge case where [n] is [one]. *)
-  if Complex.( p.re = 1.0 && p.im = 0.0 && q.re = 0.0 && q.im = 0.0 ) then
-    zero
+  (* Take care of the edge case where [(p, q)] is a scalar. *)
+  if Complex.( p.im = 0.0 && q.re = 0.0 && q.im = 0.0 ) then
+    Complex.({ re = Float.log p.re; im = 0.0 }, zero)
   else
     let lp = Complex.log p in
-    of_complex_tuple Complex.(lp, mul { re = lp.im /. p.im; im = 0.0 } q )
+    Complex.(lp, mul { re = lp.im /. p.im; im = 0.0 } q )
 
 let add (p1, q1) (p2, q2) = Complex.( add p1 p2, add q1 q2 )
 

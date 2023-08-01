@@ -32,7 +32,7 @@ let tests = "Dualcomplex tests" >::: [
       "Addition with zero changed the value."
       ( eq n Dualcomplex.( add zero n ) ));
 
-  "zero 1" >:: (fun _ ->
+  "zero 2" >:: (fun _ ->
     let n = Dualcomplex.of_float_tuple (1.0, 2.0, 3.0, 4.0) in
     assert_bool
       "Addition with zero changed the value."

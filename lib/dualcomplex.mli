@@ -4,9 +4,10 @@
     numbers_ are referred to as just _dual complex numbers_.
 
     This module provides basic operations on dual complex numbers
-    including conversions from/to SE(2). The four scalar components of
-    the dual complex numbers are represented in this module by
-    double-precision floating-point numbers (type [float]).
+    including conversions from/to different representations of 2D rigid
+    transformations. The four scalar components of the dual complex
+    numbers are represented in this module by double-precision
+    floating-point numbers (type [float]).
 
     A dual complex number is a pair of complex number [(p, q)] with [p]
     the (pure) complex part and [q] the dual part. Dual complex numbers
@@ -22,7 +23,7 @@
 
      - Norm: [|(p1, q1)| = |p1|].
 
-    The work in this module is partially based on:
+    The work in this module is based on:
 
     MATSUDA, Genki; KAJI, Shizuo; OCHIAI, Hiroyuki. Anti-commutative
     dual complex numbers and 2D rigid transformation. In: Mathematical
@@ -97,7 +98,9 @@ val to_complex_tuple : t -> Complex.t * Complex.t
     and rotation, respectively, represented by the (unit) dual complex
     number [n]. If [to_complex_tuple n] is [(p, q)],
     [to_translation_rotation n] is
-    [Complex.( mul p p, mul { re = 2.0; im = 0.0 } (mul p q) )]. *)
+    [Complex.( mul p p, mul { re = 2.0; im = 0.0 } (mul p q) )]. Note
+    that the complex number representing the rotation will be of unit
+    norm if [n] is of unit norm. *)
 val to_translation_rotation : t -> Complex.t * Complex.t
 
 (** [complex n] is the pure complex part of [n]. If
