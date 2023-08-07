@@ -64,25 +64,30 @@ val of_dual : Complex.t -> t
     is the same value as [of_float_tuple (s, 0.0, 0.0, 0.0)]. *)
 val of_scalar : float -> t
 
-(** [of_translation_rotation d r] is a (unit) dual complex number
-    representing translation [d] and rotation [r]. The translation [d]
-    is a 2D translation vector as a complex number, and [r] is a
-    (unit) complex number representing a rotation with the argument of
-    [r] being the rotation angle. If
+(** If [d] is a complex number representing a translation and [r] is a
+    unit complex number representing a rotation,
+    [of_translation_rotation d r] is a unit dual complex number
+    representing a rigid transformation with translation [d] and
+    rotation [r]. More generally, if
     [to_complex_tuple (of_translation_rotation d r)] is [(p, q)], [p]
     and [q] satisfy: [p = sqrt' r], where [sqrt'] is the
     minimum-argument square root (different than [Complex.sqrt]); and
     [q = Complex.( mul { re = 0.5; im = 0.0 } (mul (inv p) d) )]. *)
 val of_translation_rotation : Complex.t -> Complex.t -> t
 
-(** [of_translation d] is a unit dual complex number representing
-    translation [d] and no rotation. [of_translation d] is the same
-    value as
-    [of_complex_tuple Complex.(one, mul { re = 0.5; im = 0.0 } d)]. *)
+(** If [d] is a complex number representing a translation,
+    [of_translation d] is a unit dual complex number representing a
+    rigid transformation with translation [d] and no rotation. More
+    generally, [to_complex_tuple (of_translation d)] is the same value
+    as [Complex.(one, mul { re = 0.5; im = 0.0 } d)]. *)
 val of_translation : Complex.t -> t
 
-(** [of_rotation r] is a unit dual complex representing rotation [r]
-    and no translation. *)
+(** If [r] is a unit complex number representing a rotation,
+    [of_rotation r] is a unit dual complex number representing a rigid
+    transformation with rotation [r] and no translation. More
+    generally, [to_complex_tuple (of_rotation r)] is the same value as
+    [(sqrt' r, Complex.zero)], where [sqrt'] is the minimum-argument
+    square root (different than [Complex.sqrt]). *)
 val of_rotation : Complex.t -> t
 
 (** [to_float_tuple n] is a tuple containing the four elements of [n].
@@ -94,13 +99,13 @@ val to_float_tuple : t -> float * float * float * float
     and the dual part of [n], respectively. *)
 val to_complex_tuple : t -> Complex.t * Complex.t
 
-(** [to_translation_rotation n] is a tuple containing the translation
-    and rotation, respectively, represented by the (unit) dual complex
-    number [n]. If [to_complex_tuple n] is [(p, q)],
-    [to_translation_rotation n] is
-    [Complex.( mul p p, mul { re = 2.0; im = 0.0 } (mul p q) )]. Note
-    that the complex number representing the rotation will be of unit
-    norm if [n] is of unit norm. *)
+(** If [n] is a unit dual complex number representing a rigid
+    transformation, [to_translation_rotation n] is a tuple [(d, r)]
+    with [d] a complex number representing the translation part of the
+    rigid transformation, and [r] a unit complex number representing
+    the rotation part. More generally, if [to_complex_tuple n] is
+    [(p, q)], [to_translation_rotation n] is
+    [Complex.(mul { re = 2.0; im = 0.0 } (mul p q), mul p p)]. *)
 val to_translation_rotation : t -> Complex.t * Complex.t
 
 (** [complex n] is the pure complex part of [n]. If
@@ -111,13 +116,18 @@ val complex : t -> Complex.t
     [(_, q)], [complex n] is [q]. *)
 val dual : t -> Complex.t
 
-(** [translation n] is the translation represented by the unit dual
-    complex number [n], computed as
+(** If [n] is a unit dual complex number representing a rigid
+    transformation, [translation n] is a complex number representing
+    the translation part of the transformation. More generally,
+    [translation n] is the same value as
     [Complex.( mul {re = 2.0; im = 0.0 } (mul (real n) (dual n)) )]. *)
 val translation : t -> Complex.t
 
-(** [rotation n] is the rotation represented by the  unit dual complex
-    number [n], computed as [Complex.mul (real n) (real n)]. *)
+(** If [n] is a unit dual complex number representing a rigid
+    transformation, [rotation n] is a unit complex number representing
+    the rotation part of the transformation. More generally,
+    [rotation n] is the same value as
+    [Complex.mul (real n) (real n)]. *)
 val rotation : t -> Complex.t
 
 (** [norm2 n] is the square of the norm of [n]. [norm2 n] is the same
@@ -134,12 +144,12 @@ val normalize : t -> t
 
 (** [neg n] is the additive inverse of [n]. If [to_complex_tuple n] is
     [(p, q)], [to_complex_tuple (neg n)] is the same value as
-    [(~-. p, ~-. q)]. *)
+    [Complex.(neg p, neg q)]. *)
 val neg : t -> t
 
 (** [conj n] is the conjugate of [n]. If [to_complex_tuple n] is
     [(p, q)], [to_complex_tuple (conj n)] is the same value as
-    [(conj p, q)]. *)
+    [Complex.(conj p, q)]. *)
 val conj : t -> t
 
 (** [inv n] is the multiplicative inverse of [n]. *)
@@ -162,8 +172,8 @@ val add : t -> t -> t
     value as [add m (neg n)]. *)
 val sub : t -> t -> t
 
-(** [mul m n] is the multiplication of [m] by [n]. Note that [mul] is
-    not commutative. *)
+(** [mul m n] is the multiplication of [m] by [n]. Note that, in
+    general, [mul m n] is different than [mul n m]. *)
 val mul : t -> t -> t
 
 (** [div m n] is the division of [m] by [n]. [div m n] has the same

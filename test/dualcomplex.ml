@@ -195,13 +195,20 @@ let tests = "Dualcomplex tests" >::: [
     let x' = Complex.norm (Dualcomplex.complex n) in
     assert_bool "norm produced an incorrect value." ( x = x' ));
 
-  "normalize" >:: (fun _ ->
+  "normalize 1" >:: (fun _ ->
     let a, b, c, d = (1.0, 2.0, 3.0, 4.0) in
     let n = Dualcomplex.of_float_tuple (a, b, c, d) in
     let x = Complex.norm (Dualcomplex.complex n) in
     let m = Dualcomplex.of_float_tuple (a /. x, b /. x, c /. x, d /. x) in
     let m' = Dualcomplex.normalize n in
     assert_bool "normalize produced an incorrect value." ( eq m m' ));
+
+  "normalize 2" >:: (fun _ ->
+    let a, b, c, d = (1.0, 2.0, 3.0, 4.0) in
+    let m = Dualcomplex.of_float_tuple (a, b, c, d) in
+    let n' = Dualcomplex.normalize m in
+    let n = Dualcomplex.norm n' in
+    assert_bool "normalize resulted in a norm different than 1." ( n = 1.0 ));
 
   "neg 1" >:: (fun _ ->
     let a, b, c, d = (1.0, 2.0, 3.0, 4.0) in
@@ -244,6 +251,13 @@ let tests = "Dualcomplex tests" >::: [
     assert_bool "inv produced an incorrect value." ( eq m m' ));
 
   "inv 2" >:: (fun _ ->
+    let s = 2.0 in
+    let n = Dualcomplex.of_scalar s in
+    let m = Dualcomplex.of_scalar (1.0 /. s) in
+    let m' = Dualcomplex.inv n in
+    assert_bool "inv produced an incorrect value." ( eq m m' ));
+
+  "inv 3" >:: (fun _ ->
     let a, b, c, d = (1.0, 2.0, 3.0, 4.0) in
     let n = Dualcomplex.of_float_tuple (a, b, c, d) in
     let m = Dualcomplex.( mul n (inv n) ) in
@@ -251,7 +265,7 @@ let tests = "Dualcomplex tests" >::: [
       "inv produced an incorrect value."
       ( is_close m Dualcomplex.one ));
 
-  "inv 3" >:: (fun _ ->
+  "inv 4" >:: (fun _ ->
     let a, b, c, d = (1.0, 2.0, 3.0, 4.0) in
     let n = Dualcomplex.of_float_tuple (a, b, c, d) in
     let m = Dualcomplex.( mul (inv n) n ) in
