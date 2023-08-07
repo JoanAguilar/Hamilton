@@ -151,8 +151,8 @@ val exp : t -> t
 (** [log n] is the logarithm of [n]. *)
 val log : t -> t
 
-(** [apply m n] applies [m] onto [n] by conjugate action. [apply m n]
-    is the same value as [mul m (mul n (conj m)]. *)
+(** [apply m n] applies [m] onto [n] by inverse action. [apply m n] is
+    the same value as [mul m (mul n (inv m)]. *)
 val apply : t -> t -> t
 
 (** [add m n] is the addition of [m] and [n]. *)

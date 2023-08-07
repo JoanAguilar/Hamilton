@@ -96,6 +96,6 @@ let mul (p1, q1) (p2, q2) = Complex.(
   mul p1 p2,
   add (mul q1 (conj p2) ) (mul p1 q2) )
 
-let apply m n = mul m (mul n (conj m))
+let apply m n = mul m (mul n (inv m))
 
 let div x y = mul x (inv y)

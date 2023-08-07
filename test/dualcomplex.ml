@@ -360,7 +360,7 @@ let tests = "Dualcomplex tests" >::: [
   "apply" >:: (fun _ ->
     let m = Dualcomplex.of_float_tuple (1.0, 2.0, 3.0, 4.0) in
     let n = Dualcomplex.of_float_tuple (5.0, 6.0, 7.0, 8.0) in
-    let p = Dualcomplex.( mul m (mul n (conj m)) ) in
+    let p = Dualcomplex.( mul m (mul n (inv m)) ) in
     let p' = Dualcomplex.apply m n in
     assert_bool "apply produced an incorrect value." ( eq p p' ));
 
