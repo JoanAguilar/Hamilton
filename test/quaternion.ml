@@ -338,13 +338,22 @@ let tests = "Quaternion tests" >::: [
     let n' = Quaternion.norm q in
     assert_bool "norm produced an incorrect value." ( n = n' ));
 
-  "normalize" >:: (fun _ ->
+  "normalize 1" >:: (fun _ ->
     let s, i, j, k = (1.0, 2.0, 3.0, 4.0) in
     let n = sqrt (s *. s +. i *. i +. j *. j +. k *. k) in
     let q = Quaternion.of_float_tuple (s /. n, i /. n, j /. n, k /. n) in
     let p = Quaternion.of_float_tuple (s, i, j, k) in
     let q' = Quaternion.normalize p in
     assert_bool "normalize produced an incorrect value." ( eq q q' ));
+
+  "normalize 2" >:: (fun _ ->
+    let s, i, j, k = (1.0, 2.0, 3.0, 4.0) in
+    let p = Quaternion.of_float_tuple (s, i, j, k) in
+    let q = Quaternion.normalize p in
+    let n = Quaternion.norm q in
+    assert_bool
+      "normalize resulted in a norm different than 1."
+      ( Float.abs (n -. 1.0) < tol ));
 
   "neg 1" >:: (fun _ ->
     let s, i, j, k = (1.0, 2.0, 3.0, 4.0) in
@@ -387,6 +396,13 @@ let tests = "Quaternion tests" >::: [
     assert_bool "inv produced an incorrect value." ( eq q q' ));
 
   "inv 2" >:: (fun _ ->
+    let s = 2.0 in
+    let p = Quaternion.of_scalar s in
+    let q = Quaternion.of_scalar (1.0 /. s) in
+    let q' = Quaternion.inv p in
+    assert_bool "inv produced an incorrect value." ( eq q q' ));
+
+  "inv 3" >:: (fun _ ->
     let s, i, j, k = (1.0, 2.0, 3.0, 4.0) in
     let p = Quaternion.of_float_tuple (s, i, j, k) in
     let q = Quaternion.( mul p (inv p) ) in
@@ -394,7 +410,7 @@ let tests = "Quaternion tests" >::: [
       "inv produced an incorrect value."
       ( is_close q Quaternion.one ));
 
-  "inv 3" >:: (fun _ ->
+  "inv 4" >:: (fun _ ->
     let s, i, j, k = (1.0, 2.0, 3.0, 4.0) in
     let p = Quaternion.of_float_tuple (s, i, j, k) in
     let q = Quaternion.( mul (inv p) p ) in
