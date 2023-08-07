@@ -127,8 +127,8 @@ val exp : t -> t
 (** [log q] is the logarithm of [q]. *)
 val log : t -> t
 
-(** [apply p q] applies [p] onto [q] by conjugate action. [apply p q]
-    is the same value as [mul p (mul q (conj p)]. *) 
+(** [apply p q] applies [p] onto [q] by inverse action. [apply p q] is
+    the same value as [mul p (mul q (inv p)]. *)
 val apply : t -> t -> t
 
 (** [add p q] is the addition of [p] and [q]. *)

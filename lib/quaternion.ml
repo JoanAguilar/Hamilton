@@ -112,6 +112,6 @@ let mul (s1, i1, j1, k1) (s2, i2, j2, k2) = (
   s1 *. j2 -. i1 *. k2 +. j1 *. s2 +. k1 *. i2,
   s1 *. k2 +. i1 *. j2 -. j1 *. i2 +. k1 *. s2)
 
-let apply p q = mul p (mul q (conj p))
+let apply p q = mul p (mul q (inv p))
 
 let div p q = mul p (inv q)
