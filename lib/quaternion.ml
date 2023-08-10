@@ -10,17 +10,6 @@ let of_scalar s = (s, 0.0, 0.0, 0.0)
 
 let of_vector (i, j, k) = (0.0, i, j, k)
 
-let of_axis_angle (x, y, z) th =
-  (* Take care of the edge case where [th] is exactly 0. *)
-  if th = 0.0 then
-    one
-  else
-    let hth = 0.5 *. th in
-    let shth, chth = (sin hth, cos hth) in
-    let n = sqrt (x *. x +. y *. y +. z *. z) in
-    let x', y', z' = (x /. n, y /. n, z /. n) in
-    (chth, x' *. shth, y' *. shth, z' *. shth)
-
 let to_float_tuple (s, i, j, k) = (s, i, j, k)
 
 let scalar (s, _, _, _) = s
@@ -35,15 +24,6 @@ let normalize q =
   let n = norm q in
   let s, i, j, k = q in
   (s /. n, i /. n, j /. n, k /. n)
-
-let to_axis_angle q =
-  let q' = normalize q in
-  let s, i, j, k = q' in
-  let hth = acos s in
-  let shth = sin hth in
-  let x, y, z = (i /. shth, j /. shth, k /. shth) in
-  let th = 2.0 *. hth in
-  (x, y, z), th
 
 let axis q =
   let q' = normalize q in
@@ -83,6 +63,14 @@ let of_rotation_vector (x, y, z) =
   let x', y', z' = (0.5 *. x, 0.5 *. y, 0.5 *. z) in
   exp (0.0, x', y', z')
 
+let of_axis_angle (x, y, z) th =
+  if th = 0.0 then
+    one
+  else
+    let n = sqrt (x *. x +. y *. y +. z *. z) in
+    let x', y', z' = (x /. n, y /. n, z /. n) in
+    of_rotation_vector (th *. x', th *. y', th *. z')
+
 let log q =
   let s, i, j, k = q in
   let nv = sqrt (i *. i +. j *. j +. k *. k) in
@@ -99,6 +87,12 @@ let to_rotation_vector q =
   let q' = normalize q in
   let (_, i, j, k) = log q' in
   (2.0 *. i, 2.0 *. j, 2.0 *. k)
+
+let to_axis_angle q =
+  let (x, y, z) = to_rotation_vector q in
+  let th = sqrt (x *. x +. y *. y +. z *. z) in
+  let x', y', z' = (x /. th, y /. th, z /. th) in
+  ((x', y', z'), th)
 
 let add (s1, i1, j1, k1) (s2, i2, j2, k2) =
   (s1 +. s2, i1 +. i2, j1 +. j2, k1 +. k2)

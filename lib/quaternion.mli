@@ -65,7 +65,7 @@ val to_float_tuple : t -> float * float * float * float
       th
     )],
     where [th = 2.0 *. (acos s)]. Note that the rotation axis will be
-    of unit norm. *)
+    of unit norm (or NaN's in the degenerate case where [th = 0.0]). *)
 val to_axis_angle : t -> (float * float * float) * float
 
 (** [to_rotation_vector q] the rotation vector of the rotation
