@@ -5,22 +5,17 @@
 (generate_opam_files true)
 
 (source
- (github username/reponame))
+ (github JoanAguilar/Hamilton))
 
-(authors "Author Name")
+(authors "Joan Aguilar Mayans")
 
-(maintainers "Maintainer Name")
+(maintainers "Joan Aguilar Mayans")
 
-(license LICENSE)
-
-(documentation https://url/to/documentation)
+(license MIT)
 
 (package
  (name hamilton)
- (synopsis "A short synopsis")
- (description "A longer description")
- (depends ocaml dune)
- (tags
-  (topics "to describe" your project)))
+ (synopsis "Modules for basic operations with real numbers extensions.")
+ (depends ocaml dune))
 
 ; See the complete stanza docs at https://dune.readthedocs.io/en/stable/dune-files.html#dune-project
