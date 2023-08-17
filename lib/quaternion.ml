@@ -69,7 +69,12 @@ let of_axis_angle (x, y, z) th =
   else
     let n = sqrt (x *. x +. y *. y +. z *. z) in
     let x', y', z' = (x /. n, y /. n, z /. n) in
-    of_rotation_vector (th *. x', th *. y', th *. z')
+    let hth = 0.5 *. th in
+    let shth, chth = (sin hth, cos hth) in (
+      chth,
+      x' *. shth,
+      y' *. shth,
+      z' *. shth)
 
 let log q =
   let s, i, j, k = q in
